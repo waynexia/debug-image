@@ -13,6 +13,10 @@ jobs:
     permissions:
       contents: read
       packages: write
+    outputs:
+      image_name: ${{ steps.image-info.outputs.image_name }}
+      pull_command: ${{ steps.image-info.outputs.pull_command }}
+      version: ${{ steps.image-info.outputs.version }}
     
     steps:
       - name: Checkout code
@@ -49,3 +53,26 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
+          
+      - name: Output Image Information
+        id: image-info
+        run: |
+          # Extract the first tag as the primary version
+          PRIMARY_TAG=$(echo "${{ steps.meta.outputs.tags }}" | head -n 1)
+          IMAGE_NAME="ghcr.io/${{ github.repository }}/debug-image"
+          
+          echo "image_name=${IMAGE_NAME}" >> $GITHUB_OUTPUT
+          echo "pull_command=docker pull ${PRIMARY_TAG}" >> $GITHUB_OUTPUT
+          echo "version=${PRIMARY_TAG#*:}" >> $GITHUB_OUTPUT
+          
+          echo "::notice title=Docker Image Info::Image Name: ${IMAGE_NAME}"
+          echo "::notice title=Docker Image Info::Pull Command: docker pull ${PRIMARY_TAG}"
+          echo "::notice title=Docker Image Info::Version: ${PRIMARY_TAG#*:}"
+      
+      - name: Add Docker image info to step summary
+        run: |
+          echo "## Docker Debug Image Information" >> $GITHUB_STEP_SUMMARY
+          echo "Image Name: \`${{ steps.image-info.outputs.image_name }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "Version: \`${{ steps.image-info.outputs.version }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "Full Image Name: \`$(echo "${{ steps.meta.outputs.tags }}" | head -n 1)\`" >> $GITHUB_STEP_SUMMARY
+          echo "Pull Command: \`${{ steps.image-info.outputs.pull_command }}\`" >> $GITHUB_STEP_SUMMARY
