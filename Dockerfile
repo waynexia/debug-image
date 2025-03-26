@@ -1,7 +1,5 @@
 # Build kafka-bench
 FROM rust:slim AS builder
-ENV HTTP_PROXY=http://172.17.0.1:7890
-ENV HTTPS_PROXY=http://172.17.0.1:7890
 RUN apt-get update && apt-get install -y \
     git \
     build-essential \
