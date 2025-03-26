@@ -6,6 +6,15 @@ A Docker image for debugging purposes, automatically built and published to GitH
 
 This repository contains the source code and configuration to build a Docker debug image that's useful for troubleshooting and diagnostics in containerized environments.
 
+## Tools
+The image includes a variety of debugging tools and utilities, including:
+- curl
+- telnet
+- nc
+- fio
+- iperf
+- [kafka-bench](https://github.com/v0y4g3r/kafka-bench)
+
 ## Usage
 
 Pull the image from GitHub Container Registry:
